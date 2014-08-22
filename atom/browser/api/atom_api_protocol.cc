@@ -68,7 +68,10 @@ class CustomProtocolRequestJob : public AdapterRequestJob {
     v8::Handle<v8::Value> result = callback.Run(request());
 
     // Determine the type of the job we are going to create.
-    if (result->IsString()) {
+    if (result->IsNull() || result->IsUndefined()) {
+      // do nothing
+      return;
+    } else if (result->IsString()) {
       std::string data = mate::V8ToString(result);
       BrowserThread::PostTask(BrowserThread::IO, FROM_HERE,
           base::Bind(&AdapterRequestJob::CreateStringJobAndStart,
